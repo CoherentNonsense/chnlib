@@ -7,14 +7,15 @@
 #define RED     "\033[31m"
 #define GREEN   "\033[92m"
 #define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
 
 typedef struct {
     ChnLogLevel log_level;
 } ChnLogger;
 
 static ChnLogger logger;
-static char* LOG_LEVEL_DISPLAY[] = {  "INFO", "WARNING", "ERROR" };
-static char* LOG_LEVEL_COLOR[] =   {   GREEN,  YELLOW,    RED    };
+static char* LOG_LEVEL_DISPLAY[] = {  "DEBUG", "INFO", "WARNING", "ERROR" };
+static char* LOG_LEVEL_COLOR[] =   {   BLUE,    GREEN,  YELLOW,    RED    };
 
 void internal__chn_log(
     const ChnLogLevel level,
