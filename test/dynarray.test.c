@@ -17,15 +17,8 @@ int main(void) {
         dynarray_push(array, &(u32){4});
         dynarray_push(array, &(u32){5});
 
-        assert(
-            array[3] == 4 &&
-            "dynarray_push"
-        );
-
-        assert(
-            dynarray_len(array) == 5 &&
-            "dynarray_push (len)"
-        );
+        assert(array[3] == 4 and "dynarray_push");
+        assert(dynarray_len(array) == 5 and "dynarray_push (len)");
 
         dynarray_deinit(array);
     }
@@ -45,15 +38,8 @@ int main(void) {
         array[0] = 42;
         array[2] = 69;
 
-        assert(
-            array[2] == 69 &&
-            "dynarray_add"
-        );
-
-        assert(
-            dynarray_len(array) == 4 &&
-            "dynarray_add (len)"
-        );
+        assert(array[2] == 69 and "dynarray_add");
+        assert(dynarray_len(array) == 4 and "dynarray_add (len)");
 
         dynarray_deinit(array);
     }
