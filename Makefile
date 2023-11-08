@@ -1,7 +1,10 @@
-build/chnlib.o: src/logger.c
-	gcc -c -O3 -Iinclude $^ -o $@
+CFILES = $(wildcard src/*.c src/*/*.c)
+FLAGS = -O3 -Wall -Wextra -pedantic
 
-build/logger.test: src/logger.c test/logger.test.c
-	gcc -O3 -Iinclude $^ -o $@
+all: build/logger build/dynarray
 
-test: build/logger.test
+build/logger: $(CFILES) test/logger.test.c
+	gcc $(FLAGS) -Iinclude $^ -o $@
+
+build/dynarray: $(CFILES) test/dynarray.test.c
+	gcc $(FLAGS) -Iinclude $^ -o $@
