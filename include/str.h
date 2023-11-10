@@ -9,6 +9,7 @@ typedef struct {
 } String;
 
 String str_init(const usize len);
+void str_deinit(String str);
 String str_slice(char* data, const usize len);
 
 // macro for comptime sizeof
