@@ -5,20 +5,22 @@
 
 #define DynArray(T) T*
 
-typedef struct {
-    usize len;
-    usize cap;
-} DynArrayHeader;
+void* dynarray_init(void);
+void dynarray_deinit(void* array);
 
-void  internal__dynarray_push(void* const array, const usize size, const void* const value);
-void* internal__dynarray_add(void* const array, const usize size);
 usize dynarray_len(const void* const array);
 
-void* dynarray_init(void);
-#define dynarray_deinit(array) free((u8*)array - sizeof(DynArrayHeader))
+void  internal__dynarray_push(void** const array, const usize size, const void* const value);
+#define dynarray_push(array, value) do { \
+    __typeof__(array) tmp = value;       \
+    internal__dynarray_push(             \
+        (void** const)&array,            \
+        sizeof(*array),                  \
+        tmp                              \
+    );                                   \
+} while(0)
 
-#define dynarray_push(array, value) internal__dynarray_push((void* const)array, sizeof(*array), value);
-#define dynarray_add(array) (__typeof__(array))internal__dynarray_add((void* const)array, sizeof(*array))
-
+void* internal__dynarray_add(void** const array, const usize size);
+#define dynarray_add(array) (__typeof__(array))internal__dynarray_add((void** const)&array, sizeof(*array))
 
 #endif
