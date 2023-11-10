@@ -120,3 +120,34 @@ void* internal__map_get(
 
     return null;
 }
+
+MapIter internal__map_iter(const void* const map) {
+    MapEntry* entry = (MapEntry*)map;
+
+    // starts one entry back so we can call map_next first
+    MapIter iter = (MapIter){ 0, entry };
+
+    return iter;
+}
+
+bool internal__map_next(const void* map, const usize size, MapIter* iter) {
+    MapHeader* header = get_header(map);
+
+    while (true) {
+        if (iter->index > header->cap) { return false; }
+
+        MapEntry* entry = (MapEntry*)((u8*)map + entry_size(size) * iter->index);
+        iter->index += 1;
+
+        if (not entry->used) {
+            continue;
+        }
+
+        iter->entry = entry;
+        return true;
+    }
+}
+
+void* internal__map_iter_val(MapIter iter) {
+    return ((MapEntry*)iter.entry)->value;
+}

@@ -65,5 +65,27 @@ int main(void) {
         assert(map_get(map, str_from_lit("zzz")) == 26 * 26 * 26 - 1 and "map_get(\"zzz\")");
     }
 
+    {
+        chn_info("testing iterator");
+
+        Map(usize) map = map_init();
+        map_insert(map, str_from_lit("a"), &(usize){10});
+        map_insert(map, str_from_lit("b"), &(usize){11});
+        map_insert(map, str_from_lit("c"), &(usize){12});
+        map_insert(map, str_from_lit("d"), &(usize){13});
+        map_insert(map, str_from_lit("e"), &(usize){14});
+
+        MapIter iter = map_iter(map);
+        usize found = 0;
+        while (map_next(map, iter)) {
+            found += 1;
+            usize val = map_iter_val(map, iter);
+            chn_info("map entry %zu: %zu", iter.index, val);
+            assert((10 <= val and val <= 14) and "map_iter_val");
+        }
+
+        assert(found == 5 and "all values iterated over");
+    }
+
     chn_info("testing map (SUCCESS)");
 }
