@@ -136,7 +136,7 @@ bool internal__map_next(const void* map, const usize size, MapIter* iter) {
     MapHeader* header = (MapHeader*)map;
 
     while (true) {
-        if (iter->index > header->cap) { return false; }
+        if (iter->index >= header->cap) { return false; }
 
         MapEntry* entry = (MapEntry*)(header->data + entry_size(size) * iter->index);
         iter->index += 1;
