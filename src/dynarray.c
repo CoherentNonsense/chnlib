@@ -1,24 +1,27 @@
 #include "dynarray.h"
 
+#include <stddef.h>
+#include <stdalign.h>
 #include <string.h>
 #include "logger.h"
 
 typedef struct {
     usize len;
     usize cap;
+    alignas(max_align_t) u8 data[];
 } DynArrayHeader;
 
 static DynArrayHeader* get_header(const void* array) {
-    return (DynArrayHeader*)((u8*)array - sizeof(DynArrayHeader));
+    return (DynArrayHeader*)((u8*)array - offsetof(DynArrayHeader, data));
 }
 
 static void resize(void** array, usize size, usize new_cap) {
     DynArrayHeader* header = get_header(*array);
-    DynArrayHeader* new_header = realloc(header, sizeof(DynArrayHeader) + (size * new_cap));
+    header = realloc(header, offsetof(DynArrayHeader, data) + (size * new_cap));
 
-    new_header->cap = new_cap;
+    header->cap = new_cap;
 
-    *array = (u8*)new_header + sizeof(DynArrayHeader);
+    *array = header->data;
 }
 
 static void reserve(void** array, usize size, usize elems) {
@@ -34,17 +37,18 @@ void* dynarray_init(void) {
     header->len = 0;
     header->cap = 0;
 
-    return (u8*)header + sizeof(DynArrayHeader);
+    return header->data;
 }
 
 void dynarray_deinit(void* array) {
-    free((u8*)array - sizeof(DynArrayHeader));
+    free((u8*)array - offsetof(DynArrayHeader, data)); 
 }
 
 void internal__dynarray_push(void** const array, const usize size, const void* const value) {
     DynArrayHeader* header = get_header(*array);
 
     reserve(array, size, 1);
+    header = get_header(*array);
 
     memcpy((u8*)*array + (header->len * size), value, size);
 
@@ -55,6 +59,7 @@ void* internal__dynarray_add(void** const array, const usize size) {
     DynArrayHeader* header = get_header(*array);
 
     reserve(array, size, 1);
+    header = get_header(*array);
 
     void* new_elem = (u8*)*array + (header->len * size);
 

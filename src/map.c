@@ -1,21 +1,25 @@
 #include "map.h"
 
+#include "logger.h"
 #include <stdlib.h>
 #include <string.h>
-#include "logger.h"
+#include <stdalign.h>
+#include <stddef.h>
 
-typedef struct {
-    usize cap;
-    usize len;
-} MapHeader;
 
 typedef struct {
     String key;
     bool used;
-    u8 value[];
+    alignas(max_align_t) u8 value[];
 } MapEntry;
 
-#define entry_size(data_size) (sizeof(MapEntry) - 1 + size)
+typedef struct {
+    usize cap;
+    usize len;
+    u8 data[];
+} MapHeader;
+
+#define entry_size(data_size) (offsetof(MapEntry, value) + size)
 
 static usize hash(const String str) {
     // FNV 32-bit hash
@@ -28,25 +32,23 @@ static usize hash(const String str) {
     return h;
 }
 
-static MapHeader* get_header(const void* const map) {
-    return (MapHeader*)((u8*)map - sizeof(MapHeader));
-}
+static void resize(void** map, usize size, usize new_cap) {
+    MapHeader* header = (MapHeader*)(*map);
 
-static void resize(void** map, MapHeader** header, usize size, usize new_cap) {
-    usize old_cap = (*header)->cap;
-    *header = realloc(*header, sizeof(MapHeader) + entry_size(size) * new_cap);
-    (*header)->cap = new_cap;
-    
-    *map = (u8*)*header + sizeof(MapHeader);
+    usize old_cap = header->cap;
+    header->cap = new_cap;
 
+    *map = realloc(header, offsetof(MapHeader, data) + entry_size(size) * new_cap);
+    header = (MapHeader*)*map;
+   
+    // clear any new entries
     if (new_cap > old_cap) {
         memset(
-            (u8*)*map + entry_size(size) * old_cap,
+            header->data + entry_size(size) * old_cap,
             0,
             entry_size(size) * (new_cap - old_cap)
         );
     }
-
 }
 
 void* map_init(void) {
@@ -55,15 +57,15 @@ void* map_init(void) {
     header->cap = 0;
     header->len = 0;
 
-    return (u8*)header + sizeof(MapHeader);
+    return header;
 }
 
 void map_deinit(void* map) {
-    free((u8*)map - sizeof(MapHeader));
+    free(map);
 }
 
 usize map_len(void* map) {
-    MapHeader* header = get_header(map);
+    MapHeader* header = (MapHeader*)map;
 
     return header->len;
 }
@@ -74,19 +76,19 @@ void internal__map_insert(
     const String key,
     void* const value
 ) {
-    MapHeader* header = get_header(*map);
+    MapHeader* header = (MapHeader*)(*map);
 
     // resize if map reaches 80% capacity
     if (header->len * 5 >= header->cap * 4) {
-        resize(map, &header, size, header->cap * 2 + 8);
+        resize(map, size, header->cap * 2 + 8);
+        header = (MapHeader*)*map;
     }
 
     usize start_index = hash(key);
-
     for (usize i = 0; i < header->cap; i += 1) {
         usize index = (start_index + i) % header->cap;
 
-        MapEntry* entry = (MapEntry*)((u8*)*map + entry_size(size) * index);
+        MapEntry* entry = (MapEntry*)(header->data + entry_size(size) * index);
 
         if (not entry->used or str_eq(entry->key, key)) {
             // increase size if this was empty
@@ -106,12 +108,12 @@ void* internal__map_get(
     const usize size,
     const String key
 ) {
-    MapHeader* header = get_header(map);
-    usize start_index = hash(key);
+    MapHeader* header = (MapHeader*)map;
 
+    usize start_index = hash(key);
     for (usize i = 0; i < header->cap; i += 1) {
         usize index = (start_index + i) % header->cap;
-        MapEntry* entry = (MapEntry*)((u8*)map + entry_size(size) * index);
+        MapEntry* entry = (MapEntry*)(header->data + entry_size(size) * index);
 
         if (entry->used and str_eq(entry->key, key)) {
             return entry->value;
@@ -131,12 +133,12 @@ MapIter internal__map_iter(const void* const map) {
 }
 
 bool internal__map_next(const void* map, const usize size, MapIter* iter) {
-    MapHeader* header = get_header(map);
+    MapHeader* header = (MapHeader*)map;
 
     while (true) {
         if (iter->index > header->cap) { return false; }
 
-        MapEntry* entry = (MapEntry*)((u8*)map + entry_size(size) * iter->index);
+        MapEntry* entry = (MapEntry*)(header->data + entry_size(size) * iter->index);
         iter->index += 1;
 
         if (not entry->used) {

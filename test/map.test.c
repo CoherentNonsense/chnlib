@@ -35,6 +35,8 @@ int main(void) {
         ref->b = 'y';
 
         assert(map_get(map, str_from_lit("<-->")).b == 'y');
+
+        map_deinit(map);
     }
 
 
@@ -51,18 +53,27 @@ int main(void) {
 
         // keys from 'aaa' to 'zzz'
         chn_info("testing lots of entries");
+        // TODO: remove this when i use an allocator
+        String* keys = malloc(sizeof(String) * 26 * 26 * 26);
         for (usize i = 0; i < 26 * 26 * 26; i += 1) {
-            String key = str_init(3);
-            key.data[0] = 'a' + i % 26;
-            key.data[1] = 'a' + i / 26 % 26;
-            key.data[2] = 'a' + i / (26 * 26) % 26;
+            keys[i] = str_init(3);
+            keys[i].data[0] = 'a' + i % 26;
+            keys[i].data[1] = 'a' + i / 26 % 26;
+            keys[i].data[2] = 'a' + i / (26 * 26) % 26;
 
-            map_insert(map, key, &i);
+            map_insert(map, keys[i], &i);
         }
 
         assert(map_get(map, str_from_lit("aaa")) == 0 and "map_get(\"aaa\")");
         assert(map_get(map, str_from_lit("chn")) == 8972 and "map_get(\"chn\")");
         assert(map_get(map, str_from_lit("zzz")) == 26 * 26 * 26 - 1 and "map_get(\"zzz\")");
+
+        for (usize i = 0; i < 26 * 26 * 26; i += 1) {
+            str_deinit(keys[i]);
+        }
+        free(keys);
+
+        map_deinit(map);
     }
 
     {
@@ -85,6 +96,8 @@ int main(void) {
         }
 
         assert(found == 5 and "all values iterated over");
+
+        map_deinit(map);
     }
 
     chn_info("testing map (SUCCESS)");
