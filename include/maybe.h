@@ -4,13 +4,17 @@
 #include "chntype.h"
 
 
+#define MAX_MAYBE_VALUE 128
+
 #define Maybe(T) T*
 
-#define Some(expr) __extension__                                        \
-({                                                                      \
-    __typeof__(expr)* maybe = malloc(sizeof(expr));/*mem_alloc(global_allocator, sizeof(expr));*/\
-    *maybe = expr;                                                      \
-    maybe;                                                              \
+extern u8 internal__maybe_value[MAX_MAYBE_VALUE];
+
+#define Some(expr) __extension__                                \
+({                                                              \
+    __typeof__(expr)* maybe = (void*)internal__maybe_value;     \
+    *maybe = expr;                                              \
+    maybe;                                                      \
 })
 
 #define None null
@@ -19,9 +23,9 @@
 ({                                      \
     if (maybe == None) { return None; } \
     __typeof__(*maybe) val = *maybe;    \
-    /*mem_free(global_allocator, expr);*/\
-    free(maybe);                        \
     val;                                \
 })
+
+#define unwrap(maybe) *maybe
 
 #endif

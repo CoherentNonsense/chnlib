@@ -29,21 +29,17 @@ int main(void) {
 
     {
         chn_info("testing none state");
-        i32* result = driver(10);
+        Maybe(i32) result = driver(10);
 
-        assert(result != null and "return non null value");
-        assert(*result == 50 and "correct result");
-
-        free(result);
+        assert(result != None and "return non null value");
+        assert(unwrap(result) == 50 and "correct result");
     }
 
     {
         chn_info("testing some state");
-        i32* result = driver(90);
+        Maybe(i32) result = driver(90);
 
-        assert(result == null and "correct result");
-
-        free(result);
+        assert(result == None and "correct result");
     }
 
     chn_info("testing Maybe(T) (SUCCESS)");
