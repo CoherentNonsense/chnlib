@@ -19,11 +19,11 @@ extern u8 internal__maybe_value[MAX_MAYBE_VALUE];
 
 #define None null
 
-#define try(maybe) __extension__        \
-({                                      \
-    if (maybe == None) { return None; } \
-    __typeof__(*maybe) val = *maybe;    \
-    val;                                \
+#define try(maybe_expr) __extension__           \
+({                                              \
+    __typeof__(maybe_expr) maybe = maybe_expr;  \
+    if (maybe == None) { return None; }         \
+    *maybe;                                     \
 })
 
 #define unwrap(maybe) *maybe

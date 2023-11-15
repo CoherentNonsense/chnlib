@@ -1,17 +1,17 @@
 #include "str.h"
 
 String str_init(const usize len) {
-    char* data = malloc(sizeof(char) * len);
+    char* ptr = malloc(sizeof(char) * len);
 
-    return (String){ data, len };
+    return (String){ ptr, len };
 }
 
 void str_deinit(String str) {
     free(str.ptr);
 }
 
-String str_slice(char* data, const usize len) {
-    return (String){ data, len };
+String str_slice(char* ptr, const usize len) {
+    return (String){ ptr, len };
 }
 
 bool str_eq(const String a, const String b) {
