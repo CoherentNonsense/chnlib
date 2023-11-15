@@ -4,33 +4,23 @@
 #include <assert.h>
 
 
-static i32* maybe_null(i32 input) {
+static Maybe(i32) maybe_null(i32 input) {
     if (input > 100) {
-        return null;
+        return None;
     }
 
-    i32* ret = Maybe(malloc(sizeof(i32)));
-    *ret = input + 10;
+    i32 result = input + 10;
 
-    return ret;
+    return Some(result);
 }
 
-i32* driver(i32 start) {
-    i32* a_ref = Maybe(maybe_null(start));
-    // guarunteed non null value
-    int a = *a_ref;
-    free(a_ref);
+Maybe(i32) driver(i32 start) {
+    i32 a = try(maybe_null(start));
+    i32 b = try(maybe_null(a));
+    i32 c = try(maybe_null(b));
+    i32 d = try(maybe_null(c));
 
-    i32* b_ref = Maybe(maybe_null(a));
-    int b = *b_ref;
-    free(b_ref);
-
-    i32* c_ref = Maybe(maybe_null(b));
-    int c = *c_ref;
-    free(c_ref);
-
-    i32* d = Maybe(maybe_null(c));
-    return d;
+    return Some(d);
 }
 
 int main(void) {

@@ -23,6 +23,7 @@ typedef double f64;
 
 typedef size_t usize;
 
+#undef NULL // >:)
 #define null ((void*)0)
 
 #endif
