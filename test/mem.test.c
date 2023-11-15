@@ -25,4 +25,6 @@ int main(void) {
         arena_deinit(&arena);
     }
     chn_info("testing arena allocator (SUCCESS)");
+
+    return 0;
 }

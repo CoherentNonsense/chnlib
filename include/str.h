@@ -4,7 +4,7 @@
 #include "chntype.h"
 
 typedef struct {
-    char* data;
+    char* ptr;
     usize len;
 } String;
 

@@ -25,7 +25,7 @@ static usize hash(const String str) {
     // FNV 32-bit hash
     unsigned int h = 2166136261;
     for (usize i = 0; i < str.len; i += 1) {
-        h = h ^ ((u8)*(str.data + i));
+        h = h ^ ((u8)*(str.ptr+ i));
         h = h * 16777619;
     }
 

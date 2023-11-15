@@ -5,12 +5,12 @@
 
 
 int main(void) {
-    chn_info("testing string");
 
+    chn_info("testing string");
     {
         chn_info("testing string slice");
         String a = str_from_lit("hello");
-        String a_slice = str_slice(a.data, a.len);
+        String a_slice = str_slice(a.ptr, a.len);
 
         assert(str_eq(a, a_slice) and "string is the same as slice");
     }
@@ -19,15 +19,14 @@ int main(void) {
         chn_info("testing string allocation");
         String a = str_from_lit("chn");
         String b = str_init(3);
-        b.data[0] = 'c';
-        b.data[1] = 'h';
-        b.data[2] = 'n';
+        b.ptr[0] = 'c';
+        b.ptr[1] = 'h';
+        b.ptr[2] = 'n';
 
         assert(str_eq(a, b) and "null terminated is same as non null terminated");
 
         str_deinit(b);
     }
-
     chn_info("testing string (SUCCESS)");
 
     return 0;

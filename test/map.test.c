@@ -57,9 +57,9 @@ int main(void) {
         String* keys = malloc(sizeof(String) * 26 * 26 * 26);
         for (usize i = 0; i < 26 * 26 * 26; i += 1) {
             keys[i] = str_init(3);
-            keys[i].data[0] = 'a' + i % 26;
-            keys[i].data[1] = 'a' + i / 26 % 26;
-            keys[i].data[2] = 'a' + i / (26 * 26) % 26;
+            keys[i].ptr[0] = 'a' + i % 26;
+            keys[i].ptr[1] = 'a' + i / 26 % 26;
+            keys[i].ptr[2] = 'a' + i / (26 * 26) % 26;
 
             map_insert(map, keys[i], &i);
         }
