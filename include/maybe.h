@@ -26,6 +26,6 @@ extern u8 internal__maybe_value[MAX_MAYBE_VALUE];
     *maybe;                                     \
 })
 
-#define unwrap(maybe) *maybe
+#define unwrap(maybe) (*maybe)
 
 #endif

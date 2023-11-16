@@ -27,18 +27,29 @@ int main(void) {
         assert(map_len(map) == 6 and "map_len");
 
         assert(map_get_ref(map, str_from_lit("this is a key"))->b == 'f' and "map_get_ref");
-        assert(map_get(map, str_from_lit("hellow")).b == 'd' and "map_get");
+        assert(unwrap(map_get(map, str_from_lit("hellow"))).b == 'd' and "map_get");
 
 
         chn_info("testing mutating data");
         TestData* ref = map_get_ref(map, str_from_lit("<-->"));
         ref->b = 'y';
 
-        assert(map_get(map, str_from_lit("<-->")).b == 'y');
+        assert(unwrap(map_get(map, str_from_lit("<-->"))).b == 'y');
 
         map_deinit(map);
     }
 
+    {
+        chn_info("testing nonexisting entry");
+
+        Map(usize) map = map_init();
+
+        map_insert(map, str_from_lit("a"), &(usize){42});
+
+        assert(map_get(map, str_from_lit("b")) == None and "nonexistant is null");
+
+        map_deinit(map);
+    }
 
     {
         chn_info("testing duplicates");
@@ -48,7 +59,7 @@ int main(void) {
         map_insert(map, str_from_lit("a"), &(usize){69});
         map_insert(map, str_from_lit("a"), &(usize){0xC04});
 
-        assert(map_get(map, str_from_lit("a")) == 0xC04 and "map_get");
+        assert(unwrap(map_get(map, str_from_lit("a"))) == 0xC04 and "map_get");
 
 
         // keys from 'aaa' to 'zzz'
@@ -64,9 +75,9 @@ int main(void) {
             map_insert(map, keys[i], &i);
         }
 
-        assert(map_get(map, str_from_lit("aaa")) == 0 and "map_get(\"aaa\")");
-        assert(map_get(map, str_from_lit("chn")) == 8972 and "map_get(\"chn\")");
-        assert(map_get(map, str_from_lit("zzz")) == 26 * 26 * 26 - 1 and "map_get(\"zzz\")");
+        assert(unwrap(map_get(map, str_from_lit("aaa"))) == 0 and "map_get(\"aaa\")");
+        assert(unwrap(map_get(map, str_from_lit("chn"))) == 8972 and "map_get(\"chn\")");
+        assert(unwrap(map_get(map, str_from_lit("zzz"))) == 26 * 26 * 26 - 1 and "map_get(\"zzz\")");
 
         for (usize i = 0; i < 26 * 26 * 26; i += 1) {
             str_deinit(keys[i]);

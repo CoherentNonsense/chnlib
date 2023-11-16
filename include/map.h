@@ -3,6 +3,7 @@
 
 #include "chntype.h"
 #include "str.h"
+#include "maybe.h"
 
 
 #define Map(T) T*
@@ -24,7 +25,11 @@ void internal__map_insert(void** const map, const usize size, const String key, 
 } while(0)
 
 void* internal__map_get(const void* const map, const usize size, const String key);
-#define map_get(map, key) (*(__typeof__(map))internal__map_get(map, sizeof(*map), key))
+#define map_get(map, key) __extension__ \
+({ \
+    __typeof__(map) ref = internal__map_get(map, sizeof(*map), key); \
+    ref == null ? None : Some(*ref); \
+})
 #define map_get_ref(map, key) ((__typeof__(map))internal__map_get(map, sizeof(*map), key))
 
 typedef struct {
