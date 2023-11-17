@@ -43,6 +43,7 @@ MapIter internal__map_iter(const void* const map);
 bool internal__map_next(const void* map, const usize size, MapIter* iter);
 #define map_next(map, iter) internal__map_next(map, sizeof(*map), (MapIter*)&iter)
 
+String map_iter_key(MapIter iter);
 void* internal__map_iter_val(MapIter iter);
 #define map_iter_val(map, iter) (*(__typeof__(map))internal__map_iter_val(iter))
 #define map_iter_val_ref(map, iter) ((__typeof__(map))internal__map_iter_val(iter))

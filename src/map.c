@@ -150,6 +150,10 @@ bool internal__map_next(const void* map, const usize size, MapIter* iter) {
     }
 }
 
+String map_iter_key(MapIter iter) {
+    return ((MapEntry*)iter.entry)->key;
+}
+
 void* internal__map_iter_val(MapIter iter) {
     return ((MapEntry*)iter.entry)->value;
 }

@@ -18,6 +18,6 @@ String str_slice(char* ptr, const usize len);
 bool str_eq(const String a, const String b);
 
 // to be used in formatted string. e.g. printf(".*s\n", str_format(foo));
-#define str_format(str) (int)str.len, str.ptr
+#define str_format(str) (int)(str).len, (str).ptr
 
 #endif
