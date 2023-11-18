@@ -3,10 +3,10 @@
 
 #include "chntype.h"
 
-extern bool defer_running;
-extern void* defer_done_label_ptr;
-extern void* defer_label_stack[32];
-extern usize defer_label_stack_len;
+extern _Thread_local bool defer_running;
+extern _Thread_local void* defer_done_label_ptr;
+extern _Thread_local void* defer_label_stack[32];
+extern _Thread_local usize defer_label_stack_len;
 
 void internall__defer_push(void);
 void internall__defer_pop(void);
