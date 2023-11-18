@@ -17,5 +17,5 @@ i32 main(void) {
 
     puts("How are you?");
 
-    defer_return (0);
+    defer_return 0;
 }
