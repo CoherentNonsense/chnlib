@@ -9,7 +9,7 @@ TESTEXES = $(patsubst test/%.c, build/%, $(TESTFILES))
 
 CC = gcc
 AR = ar
-FLAGS = -O3 -Wall -Wextra -pedantic
+FLAGS = -std=c11 -O3 -Wall -Wextra
 INCLUDES = -Iinclude
 
 ifeq ($(PREFIX),)
